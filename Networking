@@ -1,0 +1,28 @@
+---Craete VCN & Subnets in OCI using Ansible
+- hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Create VCN
+      oci_core_vcn:
+        compartment_id: "ocid1.compartment.oc1..<your_compartment_ocid>"
+        cidr_block: "10.0.0.0/16"  # Adjust as needed
+        display_name: "my-ansible-vcn"
+        dns_label: "my-ansible-vcn-dns"  # Optional custom DNS label
+      register: vcn_creation_result
+
+    - debug:
+        var: vcn_creation_result
+
+    - name: Create Subnet
+      oci_core_subnet:
+        compartment_id: "ocid1.compartment.oc1..<your_compartment_ocid>"
+        vcn_id: "{{ vcn_creation_result.id }}" # Reference the created VCN
+        cidr_block: "10.0.1.0/24"  # Adjust as needed
+        display_name: "my-ansible-subnet"
+        dns_label: "my-ansible-subnet-dns" # Optional custom DNS label
+        # Specify availability_domain if needed:
+        # availability_domain: "IwIq:US-ASHBURN-AD-1" 
+      register: subnet_creation_result
+
+    - debug:
+        var: subnet_creation_result
